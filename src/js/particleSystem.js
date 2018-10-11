@@ -18,9 +18,11 @@ var ParticleSystem = function() {
     // bounds of the data
     var bounds = {};
     var rect;
-    var plane;
+    var plane, hplane;
     var points;
     var pointsVector3=[];
+    var cone1, cone2, hcylinder, vcone1, vcone2, vcylinder;
+    var v = 1 , h = 0;
 
     // create the containment box.
     // This cylinder is only to guide development.
@@ -50,7 +52,7 @@ var ParticleSystem = function() {
 
 
         var planeGeom = new THREE.PlaneGeometry(10, 10);
-        planeGeom.rotateX(-Math.PI / 2);
+        //planeGeom.rotateX(-Math.PI / 2);
         plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({
           color: 0x5e7600,
           transparent: true,
@@ -61,105 +63,75 @@ var ParticleSystem = function() {
         //plane.rotation.x = Math.PI / 5;
         sceneObject.add(plane);
 
-        //Creating axis ********************************************** STARTS HERE
-        var group = new THREE.Group();
+        //planeGeom.rotateX(-Math.PI / 2);
+        var hplaneGeom = new THREE.PlaneGeometry(10, 10);
+        //hplaneGeom.rotateX(-Math.PI / 2);
+        hplane = new THREE.Mesh(hplaneGeom, new THREE.MeshBasicMaterial({
+          color: 0x5e7600,
+          transparent: true,
+          opacity: 0.75,
+          side: THREE.DoubleSide
+        }));
+        hplane.rotation.x = Math.PI /2;
+        //sceneObject.add(hplane);
+        
 
+        //Creating axis ********************************************** STARTS HERE
+
+        /* Horizontal Arrow */
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
         geometry.scale(0.06,0.06,0.06);
         var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
-        var cone1 = new THREE.Mesh( geometry, material );
-        cone1.position.x=-10;        
-        cone1.position.y=3;
+        cone1 = new THREE.Mesh( geometry, material );
+        cone1.position.x=-10;       
+        cone1.position.z=3;
+        cone1.rotation.x = Math.PI / 2;
         sceneObject.add( cone1 );
 
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
         geometry.scale(0.06,0.06,0.06);
         var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
-        var cone2 = new THREE.Mesh( geometry, material );
+        cone2 = new THREE.Mesh( geometry, material );
         cone2.position.x=-10;        
-        cone2.position.y=-3;
-        cone2.rotation.x=Math.PI;
+        cone2.position.z=-3;
+        cone2.rotation.x=Math.PI * 1.5;
         sceneObject.add( cone2 );
 
         var geometry = new THREE.CylinderGeometry( 5, 5, 20, 32 );
         geometry.scale(0.02,0.3,0.02);
         var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
-        var cylinder = new THREE.Mesh( geometry, material );
-        cylinder.position.x=-10;
-        sceneObject.add( cylinder );
+        hcylinder = new THREE.Mesh( geometry, material );
+        hcylinder.position.x=-10;
+        hcylinder.rotation.x= Math.PI / 2;
+        sceneObject.add( hcylinder );
 
-        /*group.add( cone1 );
-        group.add( cylinder );
-        group.add( cone2 );
 
-        var group2=group;
-*/      
-        /*var text ="helloo";
-        var loader = new THREE.FontLoader();
+        /* Vertical Arrow */
+        var geometry = new THREE.ConeGeometry( 5, 20, 32 );
+        geometry.scale(0.06,0.06,0.06);
+        var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+        vcone1 = new THREE.Mesh( geometry, material );
+        vcone1.position.x=-10;       
+        vcone1.position.y=3;
+        //sceneObject.add( vcone1 );
 
-        loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) 
-        {
-            var textgeo= new THREE.TextGeometry("Hello",
-            {
-                font: font,
-                size: 80,
-                height: 5,
-                curveSegments: 12,
-                bevel Enabled:true,
-                bevelThickness: 10,
-                bevelSize: 8,
-                bevelSegments: 5
-            });
-        });
-        sceneObject.add(text);
-        */
-        /*
-        var text = abc();
-        text.setHTML("Label");
-        text.setParent(mesh);
-        this.textlabels.push(text);
-        this.container.appendChild(text.element);
+        var geometry = new THREE.ConeGeometry( 5, 20, 32 );
+        geometry.scale(0.06,0.06,0.06);
+        var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+        vcone2 = new THREE.Mesh( geometry, material );
+        vcone2.position.x=-10;        
+        vcone2.position.y=-3;
+        vcone2.rotation.x=Math.PI;
+        //sceneObject.add( vcone2 );
 
-        function abc() {
-            var div = document.createElement('div');
-            div.className = 'text-label';
-            div.style.position = 'absolute';
-            div.style.width = 100;
-            div.style.height = 100;
-            div.innerHTML = "hi there!";
-            div.style.top = -1000;
-            div.style.left = -1000;
-            
-            var _this = this;
-            
-            return {
-              element: div,
-              parent: false,
-              position: new THREE.Vector3(0,0,0),
-              setHTML: function(html) {
-                this.element.innerHTML = html;
-              },
-              setParent: function(threejsobj) {
-                this.parent = threejsobj;
-              },
-              updatePosition: function() {
-                if(parent) {
-                  this.position.copy(this.parent.position);
-                }
-                
-                var coords2d = this.get2DCoords(this.position, _this.camera);
-                this.element.style.left = coords2d.x + 'px';
-                this.element.style.top = coords2d.y + 'px';
-              },
-              get2DCoords: function(position, camera) {
-                var vector = position.project(camera);
-                vector.x = (vector.x + 1)/2 * window.innerWidth;
-                vector.y = -(vector.y - 1)/2 * window.innerHeight;
-                return vector;
-              }
-            };
-            }
-            */
+        var geometry = new THREE.CylinderGeometry( 5, 5, 20, 32 );
+        geometry.scale(0.02,0.3,0.02);
+        var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+        vcylinder = new THREE.Mesh( geometry, material );
+        vcylinder.position.x=-10;
+        vcylinder.rotation.y= Math.PI / 2;
+        //sceneObject.add( vcylinder );   
+
         //Creating axis ********************************************** ENDS HERE
 
         //var controls = new THREE.DragControls(rect, self.camera, self.renderer.domElement);
@@ -169,17 +141,48 @@ var ParticleSystem = function() {
 
     };
 
+    function sliders()
+    {
+        if(document.getElementById("horizontal").checked)
+        {
+            sceneObject.remove(cone1);
+            sceneObject.remove(cone2);
+            sceneObject.remove(hcylinder);
+            sceneObject.remove(plane);
+            v=0;
+            sceneObject.add(vcone1);
+            sceneObject.add(vcone2);
+            sceneObject.add(vcylinder);
+            sceneObject.add(hplane);
+            h=1;
+        }
+        else
+        {
+            sceneObject.remove(vcone1);
+            sceneObject.remove(vcone2);
+            sceneObject.remove(vcylinder);
+            sceneObject.remove(hplane);
+            h=0;
+            sceneObject.add(cone1);
+            sceneObject.add(cone2);
+            sceneObject.add(hcylinder);
+            sceneObject.add(plane);
+            v=1;
+        }
+    }
 
     function Keyboard(){
         var speed=0.01;
 
-        //if(event.keyCode == 37){rect.position.x +=speed;}//Left
-        //else if(event.keyCode == 39){rect.position.x -=speed;}//Right
-        if(event.keyCode == 87 && plane.position.y<=5){
-            plane.position.y +=speed;
+        if(event.keyCode == 65 && plane.position.z <= 5){
+            plane.position.z +=speed;
         }
-        else if(event.keyCode == 83 && plane.position.y>=-5){plane.position.y -=speed;}
+        else if(event.keyCode == 68 && plane.position.z>=-5){plane.position.z -=speed;}
 
+        if(event.keyCode == 87 && plane.position.y < 5){
+            hplane.position.y +=speed;
+        }
+        else if(event.keyCode == 83 && plane.position.y>-5){hplane.position.y -=speed;}
     }
 
     function revertBackOpacity()
@@ -210,7 +213,6 @@ var ParticleSystem = function() {
         var color = new THREE.Color();
         var i=0,k=0;
 
-
         data.forEach(function(val)
         {
             // positions
@@ -219,6 +221,7 @@ var ParticleSystem = function() {
             vertices[i+2] = val.Y;
             pointsVector3[k]=new THREE.Vector3(vertices[i],vertices[i+1],vertices[i+2]);
             k=k+1;
+
             // colors
             colors[i]= 1-(val.concentration/351)*0.2 ;
             colors[i+1] = 1-(val.concentration/351)*5 ;
@@ -232,7 +235,7 @@ var ParticleSystem = function() {
         
         var material = new THREE.PointsMaterial( { size: 0.06, vertexColors: THREE.VertexColors } );
         points = new THREE.Points( geometry, material );
-        sceneObject.add( points ); 
+        sceneObject.add( points );
     }
 //******************************************************************************** STARTS HERE
 var pointsOfIntersection = new THREE.Geometry();
@@ -252,70 +255,81 @@ var pointOfIntersection = new THREE.Vector3();
 function drawIntersectionPoints() {
     if(event.keyCode == 88)
     {
+          var mathPlane = new THREE.Plane();
+          if(v==1)
+          {
+              plane.localToWorld(planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
+              plane.localToWorld(planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
+              plane.localToWorld(planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
+              mathPlane.setFromCoplanarPoints(planePointA, planePointB, planePointC);
+          }
+          else
+          {
+            hplane.localToWorld(planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
+            hplane.localToWorld(planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
+            hplane.localToWorld(planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
+            mathPlane.setFromCoplanarPoints(planePointA, planePointB, planePointC); 
+          }
+          var a=new THREE.Vector3(0,0,0);
 
-      var mathPlane = new THREE.Plane();
-      plane.localToWorld(planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-      plane.localToWorld(planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-      plane.localToWorld(planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-      mathPlane.setFromCoplanarPoints(planePointA, planePointB, planePointC);
-      var a=new THREE.Vector3(0,0,0);
+            sceneObject.remove(points);
+            points.geometry.dispose();
+            points.material.dispose();
+            points = undefined;
 
-        sceneObject.remove(points);
-        points.geometry.dispose();
-        points.material.dispose();
-        points = undefined;
+          //console.log(mathPlane.distanceToPoint(a));
+          //console.log(mathPlane);
+          count=0;
+          intersectPoints=[];
 
-      //console.log(mathPlane.distanceToPoint(a));
-      //console.log(mathPlane);
-      count=0;
-      intersectPoints=[];
+            var geometry = new THREE.BufferGeometry();
+            var vertices = new Float32Array(data.length*3);
+            var colors = new Float32Array(data.length*3);
+            var alphas = new Float32Array( data.length * 1 );
+            var color = new THREE.Color();
+            var i=0,k=0;
 
-        var geometry = new THREE.BufferGeometry();
-        var vertices = new Float32Array(data.length*3);
-        var colors = new Float32Array(data.length*3);
-        var alphas = new Float32Array( data.length * 1 );
-        var color = new THREE.Color();
-        var i=0,k=0;
+          pointsVector3.forEach(function(pintersect){
 
-      pointsVector3.forEach(function(pintersect){
+                if(Math.abs(mathPlane.distanceToPoint(pintersect))<0.01)
+                {   
+                    // positions
+                    vertices[i] = pintersect.x;         ;
+                    vertices[i+1] = pintersect.y;
+                    vertices[i+2] = pintersect.z;
 
-            if(Math.abs(mathPlane.distanceToPoint(pintersect))<0.01)
-            {   
-                // positions
-                vertices[i] = pintersect.x;         ;
-                vertices[i+1] = pintersect.y;
-                vertices[i+2] = pintersect.z;
+                    // colors
+                    colors[i]= 0 ;
+                    colors[i+1] = 0 ;
+                    colors[i+2] = 0 ;
 
-                // colors
-                colors[i]= 0 ;
-                colors[i+1] = 0 ;
-                colors[i+2] = 0 ;
+                    i=i+3;
 
-                i=i+3;
+                    //Alpha value
+                    alphas[k]=0;
+                    k=k+1;
 
-                //Alpha value
-                alphas[k]=0;
-                k=k+1;
+                    intersectPoints.push(pintersect);
+                    count=count+1;
+                    alphas[k]=0.5;
+                    //console.log(intersectPoints);
+                }
+          })
 
-                intersectPoints.push(pintersect);
-                count=count+1;
-                alphas[k]=0.5;
-                //console.log(intersectPoints);
-            }
-      })
+            geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+            geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphas, 1 ) );
+            geometry.computeBoundingSphere();
 
-        geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-        geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-        geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphas, 1 ) );
-        geometry.computeBoundingSphere();
-
-        var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: THREE.VertexColors } );
-        material.opacity=0.1;
-        points = new THREE.Points( geometry, material );
-        sceneObject.add( points );
-
-        plotpts(intersectPoints);
-      //console.log(count);
+            var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: THREE.VertexColors } );
+            material.opacity=0.1;
+            points = new THREE.Points( geometry, material );
+            sceneObject.add( points );
+            if(v==1)
+                plotpts(intersectPoints);
+            else
+                plotptsh(intersectPoints);
+          //console.log(count);
     }
 }
 //*********************************************************************************** ENDS HERE
@@ -376,6 +390,11 @@ function drawIntersectionPoints() {
         // accessor for the particle system
         getParticleSystems : function() {
             return sceneObject;
+        },
+
+        enable_disable_sliders: function()
+        {
+            sliders();
         }
     };
 

@@ -1,7 +1,7 @@
 //var width=1000,height=1000;
 
 var width = d3.select('.particleDiv').node().clientWidth;
-var height = width * 0.85;
+var height = width * 0.75;
 
 var svg1=d3.select(".segment")
           .append("svg")
@@ -19,14 +19,9 @@ var rectangle = svg1.append("rect")
 //console.log(intersectPoints);
 
 var jsonCircles = [
-  { "x_axis": 30, "y_axis": 30, "radius": 10, "color" : "green" },
-  { "x_axis": 70, "y_axis": 70, "radius": 10, "color" : "purple"},
-  { "x_axis": 110, "y_axis": 100, "radius": 10, "color" : "red"}];
-
-var jsonCircles1 = [
-  { "x_axis": 60, "y_axis": 90, "radius": 10, "color" : "green" },
-  { "x_axis": 234, "y_axis": 50, "radius": 10, "color" : "purple"},
-  { "x_axis": 134, "y_axis": 123, "radius": 10, "color" : "red"}];
+  { "x_axis": width/2 - 30, "y_axis": height/2, "radius": 10, "color" : "red" },
+  { "x_axis": width/2, "y_axis": height/2, "radius": 10, "color" : "green"},
+  { "x_axis": width/2 + 30, "y_axis": height/2, "radius": 10, "color" : "blue"}];
 
 var svgContainer = svg1.append("svg");
 var circles = svgContainer.selectAll("circle")
@@ -44,15 +39,30 @@ function plotpts(intersectPoints)
 {
 	svgContainer.remove();
 	svgContainer = svg1.append("svg");
-	var circles = svgContainer.selectAll("circle")
+	circles = svgContainer.selectAll("circle")
 	                          .data(intersectPoints)
 	                          .enter()
 	                          .append("circle");
 
-	var circleAttributes = circles
-	                       .attr("cx", function (d) { return (width/2) + (d.x * 60); })
-	                       .attr("cy", function (d) { return (height/2) + (d.z * 60); })
+	circleAttributes = circles
+	                       .attr("cx", function (d) { return (width/2) + (d.x * 50); })
+	                       .attr("cy", function (d) { return (height/2) + (d.y * 50); })
 	                       .attr("r", function (d) { return 4; })
 	                       .style("fill", function(d) { return "black"; });
+}
 
+function plotptsh(intersectPoints)
+{
+  svgContainer.remove();
+  svgContainer = svg1.append("svg");
+  circles = svgContainer.selectAll("circle")
+                            .data(intersectPoints)
+                            .enter()
+                            .append("circle");
+
+  circleAttributes = circles
+                         .attr("cx", function (d) { return (width/2) + (d.x * 50); })
+                         .attr("cy", function (d) { return (height/2) + (d.z * 50); })
+                         .attr("r", function (d) { return 4; })
+                         .style("fill", function(d) { return "black"; });
 }
